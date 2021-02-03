@@ -18,11 +18,11 @@ let crudApp = new function() {
     //비어있는 col 배열에 myClass 배열 속 객체들의 key값들을 넣어줘야 한다.
     for(let i = 0; i < this.myClass.length; i++ ) {
         //각 객체들 속의 key값들 순화
-        for(let key in this.myClass[i]) {
+            for(let key in this.myClass[i]) {
             //key를 col배열에 담기
-            if(this.col.indexOf(key) === -1) this.col.push(key);
+                if(this.col.indexOf(key) === -1) this.col.push(key);
 
-                    };
+                };
  
                 };
 
@@ -37,6 +37,19 @@ let crudApp = new function() {
                     th.innerHTML = this.col[h];
                     tr.appendChild(th);
                 };
+
+                //td 작성
+                for(i = 0; i < this.myClass.length; i++){
+                    // table에 한 행 추가.
+                    tr = table.insertRow(-1);
+                    //table header를 길이만큼 순회하면서 매칭되는 데이터 갖고오기
+                    for(j=0; j < this.col.length; j++ ){
+                        //한 행에 해당하는 한 칸은 incertcell
+                        let tabCell = tr.insertCell(-1);
+                        tabCell.innerHTML = this.myClass[i][this.col[j]];
+                    }
+
+                }
 
                 let div = document.getElementById('container');
                 div.innerHTML = '수강관리 앱';
