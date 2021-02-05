@@ -5,7 +5,7 @@ let crudApp = new (function () {
     { ID: 3, className: '심리학의이해', Category: '교양필수', Credit: 2 },
   ];
   //선택할 수 있는 항목 정의.
-  this.Category = ['전공필수', '전공선택', '교양필수', '교양선택'];
+  this.Category = ['전공필수', '전공선택', `채플`, '교양필수', '교양선택'];
 
   //table header에 담길 데이터를 확정성을 위해 배열에 담기
   this.col = [];
@@ -41,7 +41,7 @@ let crudApp = new (function () {
       // table에 한 행 추가.
       tr = table.insertRow(-1);
       //table header를 길이만큼 순회하면서 매칭되는 데이터 갖고오기
-      for (j = 0; j < this.col.length; j++) {
+      for (let j = 0; j < this.col.length; j++) {
         //한 행에 해당하는 한 칸은 incertcell
         let tabCell = tr.insertCell(-1);
         tabCell.innerHTML = this.myClass[i][this.col[j]];
@@ -80,10 +80,52 @@ let crudApp = new (function () {
       this.td.appendChild(btnDelete);
     }
 
+    //입력 행 추가
+    tr = table.insertRow(-1);
+    for (let j = 0; j < this.col.length; j++) {
+      let newCell = tr.insertCell(-1);
+      if (j >= 1) {
+        if (j === 2) {
+          //셀렉트 칸 만들기
+          let select = document.createElement('select');
+          select.innerHTML = `<option value=""></option>`;
+          for (let k = 0; k < this.Category.length; k++) {
+            select.innerHTML =
+              select.innerHTML +
+              `<option value = '${this.Category[k]}'>${this.Category[k]}</option>`;
+          }
+          newCell.appendChild(select);
+        } else {
+          let textBox = document.createElement('input');
+          textBox.setAttribute('type', 'text');
+          textBox.setAttribute('value', '');
+          newCell.appendChild(textBox);
+        }
+      }
+    }
+
+    //create btn
+    this.td = document.createElement('td');
+    tr.appendChild(this.td);
+    let btnCreate = document.createElement('input');
+    btnCreate.setAttribute('type', 'button');
+    btnCreate.setAttribute('value', 'Create');
+    btnCreate.setAttribute('id', 'New' + i);
+    btnCreate.setAttribute('style', 'background-color:#207dd1');
+    btnCreate.setAttribute('onclick', 'crudApp.New(this)'); //버튼이 클릭 될 때 마다 실행할 메소드
+    this.td.appendChild(btnCreate);
+
     //title
     let div = document.getElementById('container');
     div.innerHTML = '수강관리 앱';
     div.appendChild(table);
+  };
+
+  //Delete method
+  this.Delete = (obtn) => {
+    let targetIdx = obtn.parentNode.parentNode.rowIndex;
+    this.myClass.splice(targetIdx - 1, 1);
+    this.createTable();
   };
 })();
 
