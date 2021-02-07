@@ -13,7 +13,6 @@ let crudApp = new (function () {
   //실제로 테이블을 만들어주는 메서드
   this.createTable = () => {
     //테이블을 채우는 코드
-
     //col에 새로운 table header에 해당하는 데이터 ( myClass의  key 값) 들을 넣어주는 코드
     //비어있는 col 배열에 myClass 배열 속 객체들의 key값들을 넣어줘야 한다.
     for (let i = 0; i < this.myClass.length; i++) {
@@ -37,14 +36,14 @@ let crudApp = new (function () {
     }
 
     //td 작성
-    for (i = 0; i < this.myClass.length; i++) {
+    for (j = 0; j < this.myClass.length; j++) {
       // table에 한 행 추가.
       tr = table.insertRow(-1);
       //table header를 길이만큼 순회하면서 매칭되는 데이터 갖고오기
-      for (let j = 0; j < this.col.length; j++) {
+      for (let i = 0; i < this.col.length; i++) {
         //한 행에 해당하는 한 칸은 incertcell
         let tabCell = tr.insertCell(-1);
-        tabCell.innerHTML = this.myClass[i][this.col[j]];
+        tabCell.innerHTML = this.myClass[j][this.col[i]];
       }
       //btn 만들기
       //업데이트 버튼x
@@ -53,7 +52,7 @@ let crudApp = new (function () {
       let btnUpdate = document.createElement('input');
       btnUpdate.setAttribute('type', 'button');
       btnUpdate.setAttribute('value', 'Update');
-      btnUpdate.setAttribute('id', 'Edit' + i);
+      btnUpdate.setAttribute('id', 'Edit' + j);
       btnUpdate.setAttribute('style', 'background-color:#44CCEB');
       btnUpdate.setAttribute('onclick', 'crudApp.Update(this)'); //버튼이 클릭 될 때 마다 실행할 메소드
       this.td.appendChild(btnUpdate);
@@ -63,7 +62,7 @@ let crudApp = new (function () {
       let btnSave = document.createElement('input');
       btnSave.setAttribute('type', 'button');
       btnSave.setAttribute('value', 'Save');
-      btnSave.setAttribute('id', 'save' + i);
+      btnSave.setAttribute('id', 'save' + j);
       btnSave.setAttribute('style', 'display:none');
       btnSave.setAttribute('onclick', 'crudApp.Save(this)'); //버튼이 클릭 될 때 마다 실행할 메소드
       this.td.appendChild(btnSave);
@@ -74,7 +73,7 @@ let crudApp = new (function () {
       let btnDelete = document.createElement('input');
       btnDelete.setAttribute('type', 'button');
       btnDelete.setAttribute('value', 'Delete');
-      btnDelete.setAttribute('id', 'Delete' + i);
+      btnDelete.setAttribute('id', 'Delete' + j);
       btnDelete.setAttribute('style', 'background-color:#ED5650');
       btnDelete.setAttribute('onclick', 'crudApp.Delete(this)'); //버튼이 클릭 될 때 마다 실행할 메소드
       this.td.appendChild(btnDelete);
@@ -82,23 +81,23 @@ let crudApp = new (function () {
 
     //입력 행 추가
     tr = table.insertRow(-1);
-    for (let j = 0; j < this.col.length; j++) {
+    for (let i = 0; i < this.col.length; i++) {
       let newCell = tr.insertCell(-1);
-      if (j >= 1) {
-        if (j === 2) {
+      if (i >= 1) {
+        if (i === 2) {
           //셀렉트 칸 만들기
           let select = document.createElement('select');
           select.innerHTML = `<option value=""></option>`;
           for (let k = 0; k < this.Category.length; k++) {
             select.innerHTML =
               select.innerHTML +
-              `<option value = '${this.Category[k]}'>${this.Category[k]}</option>`;
+              `<option value ="${this.Category[k]}">${this.Category[k]}</option>`;
           }
           newCell.appendChild(select);
         } else {
           let textBox = document.createElement('input');
           textBox.setAttribute('type', 'text');
-          textBox.setAttribute('value', '');
+          textBox.setAttribute('value', ``);
           newCell.appendChild(textBox);
         }
       }
@@ -110,7 +109,7 @@ let crudApp = new (function () {
     let btnCreate = document.createElement('input');
     btnCreate.setAttribute('type', 'button');
     btnCreate.setAttribute('value', 'Create');
-    btnCreate.setAttribute('id', 'New' + i);
+    btnCreate.setAttribute('id', 'New' + j);
     btnCreate.setAttribute('style', 'background-color:#207dd1');
     btnCreate.setAttribute('onclick', 'crudApp.New(this)'); //버튼이 클릭 될 때 마다 실행할 메소드
     this.td.appendChild(btnCreate);
@@ -122,10 +121,74 @@ let crudApp = new (function () {
   };
 
   //Delete method
-  this.Delete = (obtn) => {
-    let targetIdx = obtn.parentNode.parentNode.rowIndex;
+  this.Delete = (oBtn) => {
+    let targetIdx = oBtn.parentNode.parentNode.rowIndex;
     this.myClass.splice(targetIdx - 1, 1);
     this.createTable();
+  };
+
+  //New
+  this.New = (oBtn) => {
+    let writtenIdx = oBtn.parentNode.parentNode.rowIndex;
+    let trData = document.getElementById('classTable').rows[writtenIdx];
+    let obj = {};
+
+    //td 데이터 key: value 뽑아서 obj저장
+    for (i = 1; i < this.col.length; i++) {
+      let td = trData.getElementsByTagName('td')[i];
+      if (
+        td.childNodes[0].getAttribute('type') === 'text' ||
+        td.childNodes[0].tagName === 'SELECT'
+      ) {
+        let textValue = td.childNodes[0].value;
+
+        //txt value === 우리가 실제로 입력하고 입력하고 선택한 값이 넣기.
+        if (textValue !== '') {
+          obj[this.col[i]] = textValue;
+        } else {
+          alert('모든 항목을 입력해주세요.');
+          // undefined가 추가 되지 않음. -1은 언디파인트가 출력이 되었다.
+          obj = this.myClass.pop();
+          break;
+        }
+      }
+    }
+    //credit에 only Number
+
+    //col에 id값 설정.
+    obj[this.col[0]] = this.myClass.length + 1; //자동적으로 새 id 값이 부여되서 obj의 0번 인덱스에 담긴다.
+    this.myClass.push(obj);
+    this.createTable();
+  };
+
+  //Update
+  this.Update = (oBtn) => {
+    let writtenIdx = oBtn.parentNode.parentNode.rowIndex;
+    let trData = document.getElementById('classTable').rows[writtenIdx];
+
+    //기존에 입력한 데이터 가져오기
+    for (let i = 1; i < this.col.length; i++) {
+      //기존에 입력한 데이터들을 담은 새로운 input & select를 띄워주기
+      if (i === 2) {
+        let td = trData.getElementsByTagName('td')[i];
+        let select = document.createElement('select');
+        select.innerHTML = `<option value = '${td.innerText}'>${td.innerText}</option>`;
+        for (k = 0; k < this.Category.length; k++) {
+          select.innerHTML =
+            select.innerHTML +
+            `<option value='${this.Category[k]}'>${this.Category[k]}</option>`;
+        }
+        td.innerText = '';
+        td.appendChild(select);
+      } else {
+        let td = trData.getElementsByTagName('td')[i];
+        let input = document.createElement('input');
+        input.setAttribute('type', 'text');
+        input.setAttribute('vaule', td.innerText);
+        td.innerText = ``;
+        td.appendChild(input);
+      }
+    }
   };
 })();
 
