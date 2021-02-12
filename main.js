@@ -141,14 +141,19 @@ let crudApp = new (function () {
         td.childNodes[0].tagName === 'SELECT'
       ) {
         let textValue = td.childNodes[0].value;
-
-        //txt value === 우리가 실제로 입력하고 입력하고 선택한 값이 넣기.
+        //txt value === 우리가 실제로 입력하고 선택한 값.
         if (textValue !== '') {
-          obj[this.col[i]] = textValue;
+          //여기는 숫자만 받게 하려고 했는데, 그냥 number만 쓰면 되지 않는건가요 ??
+          if (textValue[3] === Number) {
+            obj[this.col[i]] = textValue;
+          } else {
+            obj = this.myClass.pop(); //잘못 입력해도 언디파인드가 항목에 새로 만들어져서 그거 보기 싫어서 넣어봤습니다.
+            break;
+          }
         } else {
           alert('모든 항목을 입력해주세요.');
           // undefined가 추가 되지 않음. -1은 언디파인트가 출력이 되었다.
-          obj = this.myClass.pop();
+          obj = this.myClass.pop(); //잘못 입력해도 언디파인드가 항목에 새로 만들어져서 그거 보기 싫어서 넣어봤습니다.
           break;
         }
       }
