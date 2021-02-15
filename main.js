@@ -144,9 +144,10 @@ let crudApp = new (function () {
         //txt value === 우리가 실제로 입력하고 선택한 값.
         if (textValue !== '') {
           //여기는 숫자만 받게 하려고 했는데, 그냥 number만 쓰면 되지 않는건가요 ??
-          if (textValue[3] === Number) {
-            obj[this.col[i]] = textValue;
+          if (textValue[3] !== '') {
+            obj[this.col[i]] = textValue.trim();
           } else {
+            alert('숫자를 입력해주세요.')
             obj = this.myClass.pop(); //잘못 입력해도 언디파인드가 항목에 새로 만들어져서 그거 보기 싫어서 넣어봤습니다.
             break;
           }
@@ -171,8 +172,13 @@ let crudApp = new (function () {
     let writtenIdx = oBtn.parentNode.parentNode.rowIndex;
     let trData = document.getElementById('classTable').rows[writtenIdx];
 
+
     //기존에 입력한 데이터 가져오기
     for (let i = 1; i < this.col.length; i++) {
+
+    
+    // update 버튼은 숨기기
+    oBtn.setAttribute('style', 'display:none;');
       //기존에 입력한 데이터들을 담은 새로운 input & select를 띄워주기
       if (i === 2) {
         let td = trData.getElementsByTagName('td')[i];
@@ -189,12 +195,33 @@ let crudApp = new (function () {
         let td = trData.getElementsByTagName('td')[i];
         let input = document.createElement('input');
         input.setAttribute('type', 'text');
-        input.setAttribute('vaule', td.innerText);
+        input.setAttribute('value', td.innerText);
         td.innerText = ``;
         td.appendChild(input);
       }
     }
+     // update 버튼을 눌렀을 때 등장해야할 Save 버튼 나오게 하기
+    let btnSave = document.getElementById('save' + (writtenIdx - 1));
+    btnSave.setAttribute('style', 'display:block; margin-left:30px; float:left; background-color:#2DBF64;'); 
+    oBtn.setAttribute('style', 'display:none;');
   };
+
+  //save
+ this.Save = (oBtn) => {
+  let writtenIdx = oBtn.parentNode.parentNode.rowIndex;
+  let trData = document.getElementById('classTable').rows[writtenIdx];
+
+  //새롭게 입력된 값으로 myclass 배열 생성
+  for(i = 1; i < this.col.length; i++){
+    let td = trData.getElementsByTagName('td')[i];
+    if( td.childNodes[0].getAttribute('type') === 'text' ||
+    td.childNodes[0].tagName === 'SELECT'){
+      this.myClass[ writtenIdx -1 ][ this.col[i] ] = td.childNodes[0].value;
+    }
+  } 
+  this.createTable()
+ }
+
 })();
 
 crudApp.createTable();
